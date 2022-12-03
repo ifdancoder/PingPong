@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
+#include "PingPongGates.h"
 // Sets default values
 APingPongBall::APingPongBall()
 {
@@ -24,6 +25,8 @@ APingPongBall::APingPongBall()
 void APingPongBall::BeginPlay()
 {
 	Super::BeginPlay();
+
+	DefaultBallLocation = GetActorLocation();
 }
 // Called every frame
 void APingPongBall::Tick(float DeltaTime)
@@ -60,26 +63,34 @@ void APingPongBall::Server_Move_Implementation(float DeltaTime)
 	FHitResult hitResult;
 	if (!SetActorLocation(newLoc, true, &hitResult))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Ball %s Collided with %s"), *GetName(), *hitResult.GetActor()->GetName());
-		FVector moveVector = forward - currLoc;
-		moveVector.Normalize();
-		FVector resetPosition = currLoc + moveVector * DeltaTime * 5 * MoveSpeed;
-		DrawDebugDirectionalArrow(GetWorld(), newLoc + moveVector * 300, newLoc, 30, FColor::Yellow, true, 3.f, 0, 3);
-		FVector impactCorrection = hitResult.ImpactPoint + hitResult.ImpactNormal * 300;
-		DrawDebugDirectionalArrow(GetWorld(), hitResult.ImpactPoint, hitResult.ImpactPoint + hitResult.ImpactNormal * 300, 30, FColor::Blue, true, 3, 0, 3);
-		float AimAtAngle = FMath::RadiansToDegrees(acosf(FVector::DotProduct(moveVector, hitResult.ImpactNormal)));
-		moveVector = moveVector.RotateAngleAxis(AimAtAngle * 2, FVector(0, 0, 1));
-		FVector newTargetMove = newLoc + moveVector * 300;
-		newTargetMove.Z = currLoc.Z;
-		DrawDebugDirectionalArrow(GetWorld(), newLoc, newTargetMove, 30, FColor::Yellow, true, 3.f, 0, 3);
-		//SetActorLocation(currLoc);
-		SetActorLocation(resetPosition);
-		FRotator currRotation = GetActorRotation();
-		FRotator newRotation = UKismetMathLibrary::FindLookAtRotation(currLoc, newTargetMove);
-		newRotation.Pitch = currRotation.Pitch;
-		//newRotation.Yaw = newRotation.Yaw + FMath::RandRange(-10, 10);
-		SetActorRotation(newRotation);
-		Multicast_HitEffect();
+		if (APingPongGates* HittedGates = Cast<APingPongGates>(hitResult.Actor))
+		{
+			HittedGates->HittedByBall();
+			SetActorLocation(DefaultBallLocation);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Ball %s Collided with %s"), *GetName(), *hitResult.GetActor()->GetName());
+			FVector moveVector = forward - currLoc;
+			moveVector.Normalize();
+			FVector resetPosition = currLoc + moveVector * DeltaTime * 5 * MoveSpeed;
+			DrawDebugDirectionalArrow(GetWorld(), newLoc + moveVector * 300, newLoc, 30, FColor::Yellow, true, 3.f, 0, 3);
+			FVector impactCorrection = hitResult.ImpactPoint + hitResult.ImpactNormal * 300;
+			DrawDebugDirectionalArrow(GetWorld(), hitResult.ImpactPoint, hitResult.ImpactPoint + hitResult.ImpactNormal * 300, 30, FColor::Blue, true, 3, 0, 3);
+			float AimAtAngle = FMath::RadiansToDegrees(acosf(FVector::DotProduct(moveVector, hitResult.ImpactNormal)));
+			moveVector = moveVector.RotateAngleAxis(AimAtAngle * 2, FVector(0, 0, 1));
+			FVector newTargetMove = newLoc + moveVector * 300;
+			newTargetMove.Z = currLoc.Z;
+			DrawDebugDirectionalArrow(GetWorld(), newLoc, newTargetMove, 30, FColor::Yellow, true, 3.f, 0, 3);
+			//SetActorLocation(currLoc);
+			SetActorLocation(resetPosition);
+			FRotator currRotation = GetActorRotation();
+			FRotator newRotation = UKismetMathLibrary::FindLookAtRotation(currLoc, newTargetMove);
+			newRotation.Pitch = currRotation.Pitch;
+			//newRotation.Yaw = newRotation.Yaw + FMath::RandRange(-10, 10);
+			SetActorRotation(newRotation);
+			Multicast_HitEffect();
+		}
 	}
 }
 

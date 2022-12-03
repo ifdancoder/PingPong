@@ -3,6 +3,8 @@
 
 #include "PingPongPlayerController.h"
 #include "PingPongPlatform.h"
+#include "PingPongPlayerState.h"
+#include "PingPongPlayerPawn.h"
 
 APingPongPlayerController::APingPongPlayerController()
 {
@@ -19,6 +21,12 @@ void APingPongPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 	InputComponent->BindAxis("Move", this,	&APingPongPlayerController::MoveRight);
+}
+
+void APingPongPlayerController::ScoreIncrement()
+{
+	GetPlayerState<APingPongPlayerState>()->IncrementScore();
+	Cast<APingPongPlayerPawn>(GetPawn())->Server_UpdateScoreWidget();
 }
 
 void APingPongPlayerController::MoveRight(float AxisValue)

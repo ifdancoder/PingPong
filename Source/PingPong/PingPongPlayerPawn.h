@@ -14,11 +14,17 @@ class PINGPONG_API APingPongPlayerPawn : public APawn
 protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	class USpringArmComponent* SpringArm;
+
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	class UCameraComponent* Camera;
 public:
 	// Sets default values for this pawn's properties
 	APingPongPlayerPawn();
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> ScoreWidgetClass;
+
+	UUserWidget* ScoreWidget;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -27,4 +33,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_UpdateScoreWidget();
+
+	UFUNCTION(NetMulticast, Reliable, WithValidation)
+	void Multicast_UpdateScoreWidget();
 };

@@ -23,6 +23,7 @@ protected:
 
 	UPROPERTY()
 	class APingPongPlatform* Platform;
+
 public:
 	APingPongPlayerController();
 
@@ -36,6 +37,10 @@ public:
 	void SpawnPlatform(TSubclassOf<class APingPongPlatform> PlatfromClass);
 
 	virtual void SetupInputComponent() override;
+
+	UFUNCTION()
+	void ScoreIncrement();
+
 protected:
 	UFUNCTION()
 	void MoveRight(float AxisValue);

@@ -25,8 +25,7 @@ void APingPongGameModeBase::PostLogin(APlayerController* NewPlayer)
 	if (world && (!Player1Start || !Player2Start))
 	{
 		TArray<AActor*> foundActors;
-		UGameplayStatics::GetAllActorsOfClass(GetWorld(),
-			APlayerStart::StaticClass(), foundActors);
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), foundActors);
 		if (foundActors.Num() > 0)
 			Player1Start = (APlayerStart*)foundActors[0];
 		if (foundActors.Num() > 1)
@@ -69,5 +68,26 @@ void APingPongGameModeBase::PostLogin(APlayerController* NewPlayer)
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("Start position not setted in PingPongGameMode!"));
+	}
+	if (Player1 && Player2)
+	{
+		TArray<AActor*> FoundGates = TArray<AActor*>();
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), APingPongGates::StaticClass(), FoundGates);
+		APingPongGates* Gates1 = (APingPongGates*)FoundGates[0];
+		APingPongGates* Gates2 = (APingPongGates*)FoundGates[1];
+		FVector Gates1Location = Gates1->GetActorLocation();
+		FVector Gates2Location = Gates2->GetActorLocation();
+		FVector Player1StartLocation = Player1Start->GetActorLocation();
+		FVector Player2StartLocation = Player2Start->GetActorLocation();
+		if (FVector::Dist(Gates1Location, Player1StartLocation) > FVector::Dist(Gates2Location, Player1StartLocation))
+		{
+			Gates1->SetOwningController(Player1);
+			Gates2->SetOwningController(Player2);
+		}
+		else
+		{
+			Gates2->SetOwningController(Player1);
+			Gates1->SetOwningController(Player2);
+		}
 	}
 }

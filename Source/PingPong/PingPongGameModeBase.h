@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "GameFramework/PlayerStart.h"
+#include "PingPongGates.h"
 #include "PingPongGameModeBase.generated.h"
 
 /**
@@ -27,17 +28,10 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	APlayerStart* Player2Start;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	APlayerStart* Player1Start;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	APlayerStart* Player1Start;
 public:
 	APingPongGameModeBase();
 
 	virtual void BeginPlay() override;
 
 	virtual void PostLogin(APlayerController* NewPlayer) override;
-	
 };

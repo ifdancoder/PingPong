@@ -24,6 +24,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ball params")
 	UParticleSystem* HitEffect;
 
+	FVector DefaultBallLocation;
+
 	UPROPERTY(Replicated)
 	bool IsMoving = true;
 public:

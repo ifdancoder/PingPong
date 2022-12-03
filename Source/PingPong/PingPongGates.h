@@ -20,14 +20,24 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-	class USphereComponent* BodyCollision;
+	class UBoxComponent* BodyCollision;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 	UStaticMeshComponent* BodyMesh;
+
+	UPROPERTY()
+	class APingPongPlayerController* OwningController;
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable)
+	void HittedByBall();
 
+	UFUNCTION(BlueprintCallable)
+	void SetOwningController(class APingPongPlayerController* InOwningController);
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_SetOwningController(class APingPongPlayerController* InOwningController);
 };
