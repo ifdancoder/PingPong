@@ -30,6 +30,12 @@ protected:
 	UPROPERTY()
 	class UUserWidget* ScoreWidget;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> WaitingWidgetClass;
+
+	UPROPERTY()
+	class UUserWidget* WaitingWidget;
+
 public:
 	APingPongPlayerController();
 
@@ -47,10 +53,20 @@ public:
 	UFUNCTION()
 	void ScoreIncrement(int InStrengtValue);
 
-	void CreateScoreWidget();
+	UFUNCTION()
+	void ScoreNull();
+
+	UFUNCTION()
+	void HideWaitingWidget();
 
 	UFUNCTION(Client, Reliable, WithValidation)
 	void Client_UpdateScoreWidget();
+
+	UFUNCTION(Client, Reliable, WithValidation)
+	void Client_ShowWaitingWidget();
+
+	UFUNCTION(Client, Reliable, WithValidation)
+	void Client_HideWaitingWidget();
 
 	virtual void BeginPlay() override;
 

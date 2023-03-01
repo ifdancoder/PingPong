@@ -16,6 +16,11 @@ void APingPongPlayerState::IncrementScore(int InStrengtValue)
 	ScoreValue += InStrengtValue;
 }
 
+void APingPongPlayerState::ScoreNull()
+{
+	ScoreValue = 0;
+}
+
 int APingPongPlayerState::GetScore()
 {
 	return ScoreValue;

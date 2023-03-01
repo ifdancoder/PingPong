@@ -34,16 +34,25 @@ void APingPongPlayerController::ScoreIncrement(int InStrengtValue)
 	GetPlayerState<APingPongPlayerState>()->IncrementScore(InStrengtValue);
 }
 
+void APingPongPlayerController::ScoreNull()
+{
+	GetPlayerState<APingPongPlayerState>()->ScoreNull();
+}
+
+void APingPongPlayerController::HideWaitingWidget()
+{
+	Client_HideWaitingWidget();
+}
+
 void APingPongPlayerController::BeginPlay()
 {
-	if (ScoreWidgetClass)
+	if (IsLocalPlayerController() && ScoreWidgetClass)
 	{
-		if (IsLocalPlayerController())
-		{
-			ScoreWidget = CreateWidget(this, ScoreWidgetClass);
-			UKismetSystemLibrary::PrintString(GetWorld(), FString(TEXT("Widget was created")), true);
-			ScoreWidget->AddToViewport();
-		}
+		ScoreWidget = CreateWidget(this, ScoreWidgetClass);
+		ScoreWidget->AddToViewport();
+
+		WaitingWidget = CreateWidget(this, WaitingWidgetClass);
+		WaitingWidget->AddToViewport();
 	}
 }
 
@@ -124,6 +133,32 @@ void APingPongPlayerController::Client_UpdateScoreWidget_Implementation()
 }
 
 bool APingPongPlayerController::Client_UpdateScoreWidget_Validate()
+{
+	return true;
+}
+
+void APingPongPlayerController::Client_ShowWaitingWidget_Implementation()
+{
+	if (IsLocalPlayerController() && WaitingWidget)
+	{
+		WaitingWidget->SetVisibility(ESlateVisibility::Visible);
+	}
+}
+
+bool APingPongPlayerController::Client_ShowWaitingWidget_Validate()
+{
+	return true;
+}
+
+void APingPongPlayerController::Client_HideWaitingWidget_Implementation()
+{
+	if (IsLocalPlayerController() && WaitingWidget)
+	{
+		WaitingWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+}
+
+bool APingPongPlayerController::Client_HideWaitingWidget_Validate()
 {
 	return true;
 }

@@ -29,5 +29,8 @@ public:
 	void IncrementScore(int InStrengtValue);
 
 	UFUNCTION()
+	void ScoreNull();
+
+	UFUNCTION()
 	int GetScore();
 };

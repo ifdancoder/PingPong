@@ -28,10 +28,24 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	APlayerStart* Player2Start;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Delay")
+	float DelayValue = 1;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> BallClass;
+
+	class APingPongBall* Ball;
+
+	UPROPERTY(EditAnywhere)
+	FVector BallSpawnLocation;
+
 public:
 	APingPongGameModeBase();
 
 	virtual void BeginPlay() override;
+
+	void StartGame();
 
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 };

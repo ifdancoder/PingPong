@@ -6,6 +6,7 @@
 #include "PingPongPlayerController.h"
 #include "PingPongPlayerPawn.h"
 #include "Kismet/GameplayStatics.h"
+#include "PingPongBall.h"
 
 APingPongGameModeBase::APingPongGameModeBase()
 {
@@ -16,6 +17,13 @@ APingPongGameModeBase::APingPongGameModeBase()
 void APingPongGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void APingPongGameModeBase::StartGame()
+{
+	Ball = GetWorld()->SpawnActor<APingPongBall>(BallClass, FTransform(FRotator(0, 0, 0), BallSpawnLocation, FVector(1, 1, 1)));
+	Player1->HideWaitingWidget();
+	Player2->HideWaitingWidget();
 }
 
 void APingPongGameModeBase::PostLogin(APlayerController* NewPlayer)
@@ -89,5 +97,9 @@ void APingPongGameModeBase::PostLogin(APlayerController* NewPlayer)
 			Gates2->SetControllers(Player1, Player2);
 			Gates1->SetControllers(Player2, Player1);
 		}
+
+		FTimerHandle UnusedHandle;
+		GetWorldTimerManager().SetTimer(
+			UnusedHandle, this, &ThisClass::StartGame, DelayValue, false);
 	}
 }
